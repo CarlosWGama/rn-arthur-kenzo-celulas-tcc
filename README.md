@@ -6,10 +6,12 @@
 
 ## Aplicativo
 
+![](./documentacao/app.gif)
+
 - O aplicativo é feito em Expo e pode ser testado pelo QRCode abaixo
 
 
-[]
+![](./documentacao/qrcode.jpg)
 
 ## Código
 
@@ -22,7 +24,7 @@ Para usar o código, basta baixar, instalar primeiro as dependencias e executar:
 
 O projeto utiliza a biblitoeca do react-native-zoom-reanimated, para animar as imagens, como é demonstrado no exemplo abaixo do arquivo /src/app/imagem/index.tsx:
 
-```ts
+```tsx
     <GestureHandlerRootView style={{flex: 1}}>
         {/** É necessário que a raiz do projeto seja usado o GestureHandlerRootView */}
         
@@ -46,7 +48,7 @@ O projeto utiliza a biblitoeca do react-native-zoom-reanimated, para animar as i
 
 Também possui um componente para controlar as ações da contagem dos usuários, no arquivo /src/app/iamgem/contador.tsx:
 
-(./documentacao/contador.jpg)
+![Contador](./documentacao/contador.jpg)
 
 ```ts
     //Define a estrutura da pontuação e quantas celulas existem
@@ -79,4 +81,70 @@ Também possui um componente para controlar as ações da contagem dos usuários
         //Atualiza os valores
         setContador({ pontos, celula1, celula2, celula3 })
     }
+```
+--------
+- O aplicativo trava a contagem assim que o total de pontos se torne >= 100, liberando a função de finalizar a análise, que apenas lança o resultado do contador para o componente principal
+
+/src/app/imagem/contador.tsx
+```tsx
+    <Button title='Finalizar' color='green' onPress={() => onFinish(contador)} disabled={contador.pontos < 100}/>
+```
+
+/src/app/imagem/index.tsx
+```tsx
+     //Função que pega os dados do contador quando finalizado
+    const handleFinish = (contador: Contador) => {
+        Alert.alert('Resultado', `
+            Pontos: ${contador.pontos}
+            Celula 1: ${contador.celula1}
+            Celula 2: ${contador.celula2}
+            Celula 3: ${contador.celula3}
+            `)
+    }
+
+    //...
+    <Contador onFinish={handleFinish}/>
+```
+
+--------------
+- Para questão de organização, também foi criado um arquivo que simula o acesso ao banco de dados. Devendo ser nele criado a lógica de acesso aos dados da aplicação
+/src/services/imagens.tsx
+
+```tsx
+export type Imagem = {
+    id: string,
+    titulo: string,
+    url: string
+}
+
+/**
+ * Objeto que realiza acesso ao banco de dados
+ */
+const ImageService = {
+
+    /**
+     * Retorna a lista de imagens do "Firebase"
+     */
+    list: async (): Promise<Imagem[]> => {
+        return [
+            {id: '1', titulo: 'Imagem 1', url: 'https://anatpat.unicamp.br/DSCN32442+.JPG'},
+            {id: '2', titulo: 'Imagem 2', url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYvdK32-n_Xc3FxmvidKo6OWmaN3qMp8iqkWpGj9yKdblp23akbNF2qHdDs6_fH0WLHDA&usqp=CAU'},
+        ]
+    },
+
+    /**
+     * Retorna os dado da imagem em si
+     * @param id da iamgem
+     */
+    get: async(id: string) => {
+        const imagens = [
+            {id: '1', titulo: 'Imagem 1', url: 'https://anatpat.unicamp.br/DSCN32442+.JPG'},
+            {id: '2', titulo: 'Imagem 2', url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYvdK32-n_Xc3FxmvidKo6OWmaN3qMp8iqkWpGj9yKdblp23akbNF2qHdDs6_fH0WLHDA&usqp=CAU'},
+        ]
+
+        return imagens[imagens.map(imagem => imagem.id).indexOf(id)]
+    }
+}
+
+export const useImageService = () => ImageService
 ```
