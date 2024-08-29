@@ -6,7 +6,7 @@
 
 ## Aplicativo
 
-![](./documentacao/app.gif)
+<img src="./documentacao/app.gif" width="270" height="600">
 
 - O aplicativo é feito em Expo e pode ser testado pelo QRCode abaixo
 
